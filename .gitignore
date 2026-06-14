@@ -1,0 +1,39 @@
+# --- Секреты и окружение ---
+.env
+.env.*
+!.env.example
+
+# --- Локальное ---
+/PLAN.md
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+build/
+dist/
+
+# --- Виртуальные окружения ---
+.venv/
+venv/
+virtualenv/
+env/
+
+# --- Django ---
+*.log
+db.sqlite3
+db.sqlite3-journal
+/media/
+/staticfiles/
+
+# --- Tailwind / фронт-сборка ---
+/node_modules/
+
+# --- IDE / ОС ---
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
