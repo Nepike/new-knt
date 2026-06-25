@@ -1,0 +1,112 @@
+{% load static %}
+<!doctype html>
+<html lang="ru" class="theme-{{ site_theme }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}КНТ{% endblock %} — Студенческий сайт</title>
+  <script>
+    (function () {
+      const t = localStorage.getItem("color-scheme");
+      if (t === "dark" || (!t && matchMedia("(prefers-color-scheme: dark)").matches)) {
+        document.documentElement.classList.add("dark");
+      }
+    })();
+  </script>
+  {# TODO (prod): self-host шрифт/иконки/Alpine вместо CDN #}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3/dist/tabler-icons.min.css" rel="stylesheet">
+  <link href="{% static 'core/css/app.css' %}" rel="stylesheet">
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.9/dist/cdn.min.js"></script>
+</head>
+<body x-data="{ sidebar: false }" class="min-h-screen bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 font-sans">
+
+  {# ───── Сайдбар (на десктопе закреплён, на мобиле — выезжающая шторка) ───── #}
+  <aside class="fixed inset-y-0 left-0 z-40 w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 p-4 flex flex-col transition-transform duration-200"
+         :class="sidebar ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'">
+
+    <a href="#" class="flex items-center gap-2 px-2 pb-4">
+      <span class="w-8 h-8 rounded-lg bg-brand-gradient text-white flex items-center justify-center font-bold">К</span>
+      <span class="font-bold text-lg">КНТ</span>
+    </a>
+
+    {# TODO: подставлять реальные URL и активный пункт по мере готовности страниц #}
+    <nav class="flex flex-col gap-1">
+      <a href="#" class="nav-link nav-link-active"><i class="ti ti-files text-lg"></i>Материалы</a>
+      <a href="#" class="nav-link"><i class="ti ti-users text-lg"></i>Преподаватели</a>
+      <a href="#" class="nav-link"><i class="ti ti-video text-lg"></i>Лекторий</a>
+      <a href="#" class="nav-link"><i class="ti ti-books text-lg"></i>Библиотека</a>
+      <a href="#" class="nav-link"><i class="ti ti-school text-lg"></i>Студенты</a>
+      <a href="#" class="nav-link"><i class="ti ti-shopping-bag text-lg"></i>Магазин</a>
+    </nav>
+
+    <div class="mt-auto pt-3 border-t border-slate-200 dark:border-slate-800" x-data="{ open: false }">
+      {% if request.user.is_authenticated %}
+      <button @click="open = !open" class="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800">
+        <span class="w-9 h-9 rounded-[26%] p-0.5 bg-brand-gradient inline-flex shrink-0">
+          {% if request.user.photo %}
+            <img src="{{ request.user.photo.url }}" alt="" class="w-full h-full rounded-[24%] object-cover">
+          {% else %}
+            <span class="flex-1 rounded-[24%] bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-xs font-medium">{{ request.user.name|slice:":1" }}{{ request.user.surname|slice:":1" }}</span>
+          {% endif %}
+        </span>
+        <span class="min-w-0 flex-1 text-left">
+          <span class="block text-sm font-medium truncate">{{ request.user.name }} {{ request.user.surname }}</span>
+          {# TODO (M5 economy/profiles): реальные уровень и баланс #}
+          <span class="block text-xs text-slate-500">ур. 1 · 0 <i class="ti ti-coins"></i></span>
+        </span>
+        <i class="ti ti-chevron-down text-slate-400 transition" :class="open && 'rotate-180'"></i>
+      </button>
+      <div x-show="open" x-cloak @click.outside="open = false" class="mt-1 flex flex-col rounded-lg border border-slate-200 dark:border-slate-800 p-1 text-sm">
+        {# TODO: реальные URL профиля/инвентаря/настроек #}
+        <a href="#" class="px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">Профиль</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">Инвентарь</a>
+        <a href="#" class="px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">Настройки</a>
+        {% if request.user.is_staff %}<a href="{% url 'admin:index' %}" class="px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800">Админка</a>{% endif %}
+        {# TODO (M1 auth): страница выхода #}
+        <a href="#" class="px-3 py-2 rounded hover:bg-slate-100 dark:hover:bg-slate-800 text-rose-500">Выйти</a>
+      </div>
+      {% else %}
+      {# TODO (M1 auth): страница входа #}
+      <a href="#" class="btn btn-primary w-full">Войти</a>
+      {% endif %}
+    </div>
+  </aside>
+
+  <div x-show="sidebar" x-cloak @click="sidebar = false" class="fixed inset-0 z-30 bg-black/40 lg:hidden"></div>
+
+  {# ───── Правая колонка ───── #}
+  <div class="lg:pl-64 flex flex-col min-h-screen">
+
+    <header class="sticky top-0 z-20 h-14 flex items-center gap-2 px-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/80 backdrop-blur">
+      <button type="button" class="lg:hidden btn btn-ghost" aria-label="Меню" @click="sidebar = true"><i class="ti ti-menu-2 text-xl"></i></button>
+      <div class="ml-auto flex items-center gap-1">
+        {# TODO (notifications): модель уведомлений добавим позже #}
+        <button type="button" class="btn btn-ghost" aria-label="Уведомления"><i class="ti ti-bell text-xl"></i></button>
+        <button type="button" class="btn btn-ghost" aria-label="Сменить тему"
+                @click="document.documentElement.classList.toggle('dark'); localStorage.setItem('color-scheme', document.documentElement.classList.contains('dark') ? 'dark' : 'light')">
+          <i class="ti ti-moon text-xl dark:hidden"></i>
+          <i class="ti ti-sun text-xl hidden dark:block"></i>
+        </button>
+      </div>
+    </header>
+
+    <main class="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 py-6">
+      {% block content %}{% endblock %}
+    </main>
+
+    {# TODO: ссылки публичной части (О факультете / Контакты / Поддержка) #}
+    <footer class="border-t border-slate-200 dark:border-slate-800 py-5 px-4 text-center text-sm text-slate-500">
+      <div class="flex flex-wrap items-center justify-center gap-x-5 gap-y-1">
+        <a href="#" class="hover:text-slate-700 dark:hover:text-slate-300">О факультете</a>
+        <a href="#" class="hover:text-slate-700 dark:hover:text-slate-300">Контакты</a>
+        <a href="#" class="hover:text-slate-700 dark:hover:text-slate-300">Поддержка</a>
+        <a href="https://vk.com/knt_mipt" target="_blank" rel="noopener" class="hover:text-slate-700 dark:hover:text-slate-300">ВКонтакте</a>
+      </div>
+    </footer>
+  </div>
+
+</body>
+</html>
