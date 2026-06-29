@@ -1,5 +1,39 @@
 @import "tailwindcss";
 
+/* rubik-regular - cyrillic_latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 400;
+  src: url('../fonts/rubik-v31-cyrillic_latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* rubik-500 - cyrillic_latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 500;
+  src: url('../fonts/rubik-v31-cyrillic_latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* rubik-700 - cyrillic_latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 700;
+  src: url('../fonts/rubik-v31-cyrillic_latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* rubik-900 - cyrillic_latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Rubik';
+  font-style: normal;
+  font-weight: 900;
+  src: url('../fonts/rubik-v31-cyrillic_latin-900.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
@@ -8,18 +42,18 @@
   --color-brand-cyan: #22d3ee;
   --color-brand-violet: #7c3aed;
 
-  --color-rarity-common: #94a3b8;
+  /*--color-rarity-common: #94a3b8;
   --color-rarity-rare: #38bdf8;
   --color-rarity-epic: #a855f7;
   --color-rarity-legendary: #f59e0b;
   --color-rarity-mythic: #ec4899;
 
   --radius-btn: 0.625rem;
-  --radius-card: 1rem;
+  --radius-card: 1rem;*/
 }
 
 @layer components {
-  .btn {
+  /*.btn {
     @apply inline-flex items-center justify-center gap-2 rounded-btn px-4 py-2 text-sm font-medium transition active:scale-95;
   }
   .btn-primary {
@@ -49,7 +83,7 @@
   }
   .nav-link-active {
     @apply bg-brand-violet/10 text-brand-violet dark:text-brand-violet font-medium;
-  }
+  }*/
 }
 
 [x-cloak] {
