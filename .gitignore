@@ -31,7 +31,7 @@ db.sqlite3-journal
 # --- Tailwind / фронт-сборка ---
 /node_modules/
 /tailwindcss.exe
-/core/static/core/css/app.css
+/core/static/core/css/base.css
 
 # --- IDE / ОС ---
 .idea/
