@@ -8,156 +8,91 @@
 <form method="get" class="max-w-md space-y-6">
 
   <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Селект (без поиска)</h2>
-    <div x-data="select({ name: 'subject_a', search: false, options: [
-            {value:'1', label:'Алгебра'}, {value:'2', label:'Геометрия'}, {value:'3', label:'Математический анализ'},
-            {value:'4', label:'Физика'}, {value:'5', label:'Программирование'} ] })"
-         @keydown.escape="open=false" @click.outside="open=false" class="relative">
-      <input type="hidden" :name="name" :value="selectedValue">
-      <div @click="toggle()" class="w-full h-12 flex items-center gap-2 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 cursor-pointer">
-        <span class="flex-1 truncate text-sm" x-text="selectedLabel"></span>
-        <button type="button" x-show="selectedValue" x-cloak @click.stop="clear()" class="text-slate-400 hover:text-slate-600" aria-label="Очистить"><i class="fa-solid fa-xmark"></i></button>
-        <i class="fa-solid fa-chevron-down text-slate-400 text-sm transition" :class="open && 'rotate-180'"></i>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Селект (без поиска)</h2>
+    {{ form.subject_plain }}
+  </section>
+
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Селект с поиском</h2>
+    {{ form.subject_search }}
+  </section>
+
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Мультиселект (без поиска)</h2>
+    {{ form.teachers_plain }}
+  </section>
+
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Мультиселект с поиском</h2>
+    {{ form.teachers_search }}
+  </section>
+
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Текст / email / число</h2>
+    <div class="space-y-4">
+      <div class="relative">
+        {{ form.title }}
+        <label for="{{ form.title.id_for_label }}" class="field-label">Заголовок</label>
       </div>
-      <span class="absolute left-3 px-1 pointer-events-none transition-all"
-            :class="(open || selectedValue) ? '-top-2.5 text-xs px-2 rounded-full bg-brand-violet text-white' : 'top-3.5 text-sm text-slate-400 bg-white dark:bg-slate-900'">Предмет</span>
-      <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
-        <div class="max-h-56 overflow-y-auto p-1">
-          <template x-for="opt in filtered" :key="opt.value">
-            <div @click="choose(opt)" class="px-3 py-2 rounded-md text-sm cursor-pointer hover:bg-brand-violet/10 hover:text-brand-violet" x-text="opt.label"></div>
-          </template>
-        </div>
+      <div class="relative">
+        {{ form.email }}
+        <label for="{{ form.email.id_for_label }}" class="field-label">Email</label>
+      </div>
+      <div class="relative">
+        {{ form.count }}
+        <label for="{{ form.count.id_for_label }}" class="field-label">Количество</label>
       </div>
     </div>
   </section>
 
   <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Селект с поиском</h2>
-    <div x-data="select({ name: 'subject_b', search: true, options: [
-            {value:'1', label:'Алгебра'}, {value:'2', label:'Геометрия'}, {value:'3', label:'Математический анализ'},
-            {value:'4', label:'Физика'}, {value:'5', label:'Программирование'}, {value:'6', label:'Английский язык'} ] })"
-         @keydown.escape="open=false" @click.outside="open=false" class="relative">
-      <input type="hidden" :name="name" :value="selectedValue">
-      <div @click="toggle()" class="w-full h-12 flex items-center gap-2 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 cursor-pointer">
-        <span class="flex-1 truncate text-sm" x-text="selectedLabel"></span>
-        <button type="button" x-show="selectedValue" x-cloak @click.stop="clear()" class="text-slate-400 hover:text-slate-600" aria-label="Очистить"><i class="fa-solid fa-xmark"></i></button>
-        <i class="fa-solid fa-chevron-down text-slate-400 text-sm transition" :class="open && 'rotate-180'"></i>
-      </div>
-      <span class="absolute left-3 px-1 pointer-events-none transition-all"
-            :class="(open || selectedValue) ? '-top-2.5 text-xs px-2 rounded-full bg-brand-violet text-white' : 'top-3.5 text-sm text-slate-400 bg-white dark:bg-slate-900'">Предмет</span>
-      <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
-        <div class="p-2 border-b border-slate-100 dark:border-slate-800">
-          <input x-ref="search" x-model="query" type="text" placeholder="Поиск…" class="w-full h-9 rounded-md bg-slate-100 dark:bg-slate-800 px-3 text-sm outline-none">
-        </div>
-        <div class="max-h-56 overflow-y-auto p-1">
-          <template x-for="opt in filtered" :key="opt.value">
-            <div @click="choose(opt)" class="px-3 py-2 rounded-md text-sm cursor-pointer hover:bg-brand-violet/10 hover:text-brand-violet" x-text="opt.label"></div>
-          </template>
-          <div x-show="!filtered.length" class="px-3 py-2 text-sm text-slate-400">Ничего не найдено</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Мультиселект (без поиска)</h2>
-    <div x-data="multiSelect({ name: 'teachers_a', search: false, options: [
-            {value:'1', label:'Петров А.С.'}, {value:'2', label:'Сидорова Е.В.'}, {value:'3', label:'Иванов И.И.'},
-            {value:'4', label:'Кузнецова О.П.'}, {value:'5', label:'Смирнов Д.А.'} ] })"
-         @keydown.escape="open=false" @click.outside="open=false" class="relative">
-      <template x-for="v in selected" :key="v"><input type="hidden" :name="name" :value="v"></template>
-      <div @click="open = !open" class="min-h-12 flex flex-wrap items-center gap-1.5 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 cursor-pointer">
-        <template x-for="opt in selectedOptions" :key="opt.value">
-          <span class="inline-flex items-center gap-1 rounded-full bg-brand-violet/10 text-brand-violet text-xs pl-2.5 pr-1.5 py-1">
-            <span x-text="opt.label"></span>
-            <button type="button" @click.stop="remove(opt.value)" class="hover:text-brand-violet/70" aria-label="Убрать"><i class="fa-solid fa-xmark"></i></button>
-          </span>
-        </template>
-        <i class="fa-solid fa-chevron-down text-slate-400 text-sm ml-auto self-center transition" :class="open && 'rotate-180'"></i>
-      </div>
-      <span class="absolute left-3 px-1 pointer-events-none transition-all"
-            :class="(open || selected.length) ? '-top-2.5 text-xs px-2 rounded-full bg-brand-violet text-white' : 'top-3.5 text-sm text-slate-400 bg-white dark:bg-slate-900'">Преподаватели</span>
-      <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
-        <div class="max-h-56 overflow-y-auto p-1">
-          <template x-for="opt in filtered" :key="opt.value">
-            <div @click="add(opt)" class="px-3 py-2 rounded-md text-sm cursor-pointer hover:bg-brand-violet/10 hover:text-brand-violet" x-text="opt.label"></div>
-          </template>
-          <div x-show="!filtered.length" class="px-3 py-2 text-sm text-slate-400">Все выбраны</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Мультиселект с поиском</h2>
-    <div x-data="multiSelect({ name: 'teachers_b', search: true, options: [
-            {value:'1', label:'Петров А.С.'}, {value:'2', label:'Сидорова Е.В.'}, {value:'3', label:'Иванов И.И.'},
-            {value:'4', label:'Кузнецова О.П.'}, {value:'5', label:'Смирнов Д.А.'} ] })"
-         @keydown.escape="open=false" @click.outside="open=false" class="relative">
-      <template x-for="v in selected" :key="v"><input type="hidden" :name="name" :value="v"></template>
-      <div @click="open = true; $refs.msearch.focus()" class="min-h-12 flex flex-wrap items-center gap-1.5 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-2 py-1.5 cursor-text">
-        <template x-for="opt in selectedOptions" :key="opt.value">
-          <span class="inline-flex items-center gap-1 rounded-full bg-brand-violet/10 text-brand-violet text-xs pl-2.5 pr-1.5 py-1">
-            <span x-text="opt.label"></span>
-            <button type="button" @click.stop="remove(opt.value)" class="hover:text-brand-violet/70" aria-label="Убрать"><i class="fa-solid fa-xmark"></i></button>
-          </span>
-        </template>
-        <input x-ref="msearch" x-model="query" @focus="open=true" type="text" class="flex-1 min-w-24 h-7 bg-transparent text-sm outline-none">
-      </div>
-      <span class="absolute left-3 px-1 pointer-events-none transition-all"
-            :class="(open || selected.length) ? '-top-2.5 text-xs px-2 rounded-full bg-brand-violet text-white' : 'top-3.5 text-sm text-slate-400 bg-white dark:bg-slate-900'">Преподаватели</span>
-      <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
-        <div class="max-h-56 overflow-y-auto p-1">
-          <template x-for="opt in filtered" :key="opt.value">
-            <div @click="add(opt)" class="px-3 py-2 rounded-md text-sm cursor-pointer hover:bg-brand-violet/10 hover:text-brand-violet" x-text="opt.label"></div>
-          </template>
-          <div x-show="!filtered.length" class="px-3 py-2 text-sm text-slate-400">Ничего не найдено</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-2">Текстовое поле (плавающий лейбл)</h2>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Дата</h2>
+    {# date не имеет placeholder-shown → лейбл всегда поднят (.field-label-up) #}
     <div class="relative">
-      <input id="f-title" name="title" placeholder=" "
-             class="peer w-full h-12 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 outline-none focus:border-brand-violet focus:border-2">
-      <label for="f-title"
-             class="absolute left-3 top-3.5 px-1 text-slate-400 bg-white dark:bg-slate-900 transition-all
-                    peer-focus:-top-2.5 peer-focus:text-xs peer-focus:px-2 peer-focus:rounded-full peer-focus:bg-brand-violet peer-focus:text-white
-                    peer-[:not(:placeholder-shown)]:-top-2.5 peer-[:not(:placeholder-shown)]:text-xs">Заголовок</label>
+      {{ form.event_date }}
+      <label for="{{ form.event_date.id_for_label }}" class="field-label-up">Дата события</label>
     </div>
   </section>
 
-  <section class="flex items-center gap-6">
-    <label class="flex items-center gap-2 cursor-pointer select-none text-sm"><input type="checkbox" name="anon" class="w-5 h-5 rounded accent-brand-violet"> Анонимно</label>
-    <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="r" value="a" checked class="accent-brand-violet"> Вариант A</label>
-    <label class="flex items-center gap-2 cursor-pointer text-sm"><input type="radio" name="r" value="b" class="accent-brand-violet"> Вариант B</label>
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Многострочное поле</h2>
+    <div class="relative">
+      {{ form.bio }}
+      <label for="{{ form.bio.id_for_label }}" class="field-label">О себе</label>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Радио-группа</h2>
+    <div class="flex flex-wrap gap-6">
+      {% for radio in form.plan %}
+        <label class="flex items-center gap-2 cursor-pointer text-sm select-none">
+          {{ radio.tag }} {{ radio.choice_label }}
+        </label>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Чекбокс и тумблер</h2>
+    <div class="flex flex-wrap items-center gap-6">
+      <label class="flex items-center gap-2 cursor-pointer select-none text-sm">{{ form.anon }} Анонимно</label>
+      <label class="flex items-center gap-3 cursor-pointer select-none text-sm">{{ form.notify }}<span class="switch"></span> Уведомления</label>
+    </div>
   </section>
 
   {# TODO: кнопки ещё переделываем — временный стиль #}
   <button type="submit" class="btn btn-primary">Применить</button>
 </form>
 
-<p class="mt-6 text-xs text-slate-400 max-w-md">Выбери что-нибудь и нажми «Применить» — значения уйдут в URL (видно, что формы реальные).</p>
+{% if submitted %}
+<div class="mt-6 max-w-md rounded-btn border border-slate-200 dark:border-slate-800 p-4 text-sm">
+  <p class="font-medium mb-2">Форма отправлена, <code>cleaned_data</code>:</p>
+  <ul class="space-y-1 text-slate-600 dark:text-slate-300">
+    {% for k, v in submitted.items %}<li><span class="text-slate-400">{{ k }}:</span> {{ v }}</li>{% endfor %}
+  </ul>
+</div>
+{% endif %}
 
-<script>
-document.addEventListener("alpine:init", () => {
-  Alpine.data("select", ({ name, options, search = false, value = null }) => ({
-    open: false, query: "", name, options, search, selectedValue: value,
-    get selectedLabel() { const o = this.options.find(o => o.value === this.selectedValue); return o ? o.label : ""; },
-    get filtered() { const q = this.query.trim().toLowerCase(); return q ? this.options.filter(o => o.label.toLowerCase().includes(q)) : this.options; },
-    toggle() { this.open = !this.open; if (this.open && this.search) this.$nextTick(() => this.$refs.search.focus()); },
-    choose(o) { this.selectedValue = o.value; this.open = false; this.query = ""; },
-    clear() { this.selectedValue = null; },
-  }));
-  Alpine.data("multiSelect", ({ name, options, search = false, values = [] }) => ({
-    open: false, query: "", name, options, search, selected: [...values],
-    get selectedOptions() { return this.options.filter(o => this.selected.includes(o.value)); },
-    get filtered() { const q = this.query.trim().toLowerCase(); return this.options.filter(o => !this.selected.includes(o.value) && (!q || o.label.toLowerCase().includes(q))); },
-    add(o) { this.selected.push(o.value); this.query = ""; if (this.search) this.$refs.msearch.focus(); },
-    remove(v) { this.selected = this.selected.filter(x => x !== v); },
-  }));
-});
-</script>
+<p class="mt-4 text-xs text-slate-400 max-w-md">Выбери что-нибудь и нажми «Применить» — значения пройдут через Django-форму (валидация + <code>cleaned_data</code>).</p>
 {% endblock %}

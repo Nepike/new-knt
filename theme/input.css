@@ -42,8 +42,13 @@
   --color-brand-cyan: #22d3ee;
   --color-brand-violet: #7c3aed;
 
+  --color-accent: var(--color-brand-violet);
 
   --radius-btn: 0.625rem;
+}
+
+.dark {
+  --color-accent: var(--color-brand-cyan);
 }
 
 @layer components {
@@ -78,11 +83,37 @@
     @apply rounded-card bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm;
   }
   */
+  /* Поля ввода. Обёртка — .relative; лейбл — соседний .field-label.
+     Класс `peer` ставится литералом в разметке (его нельзя @apply — это маркер варианта). */
+  .input {
+    @apply w-full h-12 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 outline-none focus:border-2 focus:border-accent;
+  }
+  .textarea {
+    @apply w-full min-h-24 rounded-btn border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-4 py-3 outline-none focus:border-2 focus:border-accent resize-y;
+  }
+  /* Плавающий лейбл: снизу-внутри, всплывает при фокусе или когда поле заполнено. */
+  .field-label {
+    @apply absolute left-3 top-3.5 px-1 pointer-events-none text-slate-400 bg-white dark:bg-slate-900 transition-all;
+    @apply peer-focus:-top-2.5 peer-focus:text-xs peer-focus:px-2 peer-focus:rounded-full peer-focus:bg-accent peer-focus:text-white;
+    @apply peer-[:not(:placeholder-shown)]:-top-2.5 peer-[:not(:placeholder-shown)]:text-xs peer-[:not(:placeholder-shown)]:px-2 peer-[:not(:placeholder-shown)]:text-slate-500;
+  }
+  /* Всегда поднятый лейбл — для полей без состояния placeholder-shown (date/time/select). */
+  .field-label-up {
+    @apply absolute left-3 -top-2.5 text-xs px-2 rounded-full pointer-events-none text-slate-500 bg-white dark:bg-slate-900;
+    @apply peer-focus:bg-accent peer-focus:text-white;
+  }
+  /* Тумблер (checkbox как switch). */
+  .switch {
+    @apply relative w-10 h-6 rounded-full bg-slate-300 dark:bg-slate-700 transition-colors;
+    @apply after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:w-5 after:h-5 after:rounded-full after:bg-white after:transition-transform;
+    @apply peer-checked:bg-accent peer-checked:after:translate-x-4;
+  }
+
   .nav-link {
     @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition;
   }
   .nav-link-active {
-    @apply bg-brand-violet/10 dark:bg-brand-cyan/10 text-brand-violet dark:text-brand-cyan font-medium;
+    @apply bg-accent/10 text-accent font-medium;
   }
   .nav-link-disabled {
     @apply pointer-events-none opacity-40 cursor-not-allowed select-none;

@@ -15,6 +15,7 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.forms",
 ]
 THIRD_PARTY_APPS = []
 LOCAL_APPS = [
@@ -40,6 +41,9 @@ MIDDLEWARE = [
 ROOT_URLCONF = "knt.urls"
 WSGI_APPLICATION = "knt.wsgi.application"
 ASGI_APPLICATION = "knt.asgi.application"
+
+# Рендерить шаблоны виджетов форм через наши TEMPLATES (чтобы работал core/widgets/select.html).
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 TEMPLATES = [
     {

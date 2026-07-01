@@ -1,0 +1,56 @@
+{% comment %}
+Кастомный селект/мультиселект (Alpine). Дизайн и разметка всех селектов сайта — здесь.
+Контекст (из core.widgets.AccentSelect / AccentSelectMultiple):
+  widget.name, widget.label, widget.search (bool), widget.is_multiple (bool),
+  widget.options_json  — JSON [{value, label}, ...]
+  widget.selected_json — JSON ["value", ...] (выбранные)
+{% endcomment %}
+<div class="relative"
+     @keydown.escape="close()" @click.outside="close()" @focusin="focused = true" @focusout="onFocusOut($event)"
+     @keydown.arrow-down.prevent="onArrow(1)" @keydown.arrow-up.prevent="onArrow(-1)" @keydown.enter.prevent="onEnter()"
+     x-data="{% if widget.is_multiple %}multiSelect({ name: '{{ widget.name }}', search: {{ widget.search|yesno:'true,false' }}, values: {{ widget.selected_json }}, options: {{ widget.options_json }} }){% else %}select({ name: '{{ widget.name }}', search: {{ widget.search|yesno:'true,false' }}, value: ({{ widget.selected_json }}[0] ?? null), options: {{ widget.options_json }} }){% endif %}">
+
+  {% if widget.is_multiple %}
+    <template x-for="v in selected" :key="v"><input type="hidden" name="{{ widget.name }}" :value="v"></template>
+  {% else %}
+    <input type="hidden" name="{{ widget.name }}" :value="selectedValue ?? ''">
+  {% endif %}
+
+  <div tabindex="0" @click="toggle()" @keydown.space.prevent="toggle()"
+       class="min-h-12 w-full flex flex-wrap items-center gap-1.5 rounded-btn bg-white dark:bg-slate-900 px-2 py-1.5 cursor-pointer outline-none"
+       :class="active ? 'border-2 border-accent' : 'border border-slate-300 dark:border-slate-700'">
+    {% if widget.is_multiple %}
+      <template x-for="opt in selectedOptions" :key="opt.value">
+        <span class="inline-flex items-center gap-1 rounded-full bg-accent/10 text-accent text-xs pl-2.5 pr-1.5 py-1">
+          <span x-text="opt.label"></span>
+          <button type="button" @click.stop="remove(opt.value)" class="hover:text-accent/70" aria-label="Убрать"><i class="fa-solid fa-xmark"></i></button>
+        </span>
+      </template>
+      <i class="fa-solid fa-chevron-down text-slate-400 text-sm ml-auto self-center transition" :class="open && 'rotate-180'"></i>
+    {% else %}
+      <span class="flex-1 truncate text-sm px-1" x-text="selectedLabel"></span>
+      <button type="button" x-show="selectedValue" x-cloak @click.stop="clear()" class="text-slate-400 hover:text-slate-600" aria-label="Очистить"><i class="fa-solid fa-xmark"></i></button>
+      <i class="fa-solid fa-chevron-down text-slate-400 text-sm transition" :class="open && 'rotate-180'"></i>
+    {% endif %}
+  </div>
+
+  {% if widget.label %}
+  <span class="absolute left-3 px-1 pointer-events-none transition-all"
+        :class="active ? '-top-2.5 text-xs px-2 rounded-full bg-accent text-white' : ({% if widget.is_multiple %}selected.length{% else %}selectedValue{% endif %} ? '-top-2.5 text-xs px-2 rounded-full text-slate-500 bg-white dark:bg-slate-900' : 'top-3.5 text-sm text-slate-400 bg-white dark:bg-slate-900')">{{ widget.label }}</span>
+  {% endif %}
+
+  <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
+    {% if widget.search %}
+    <div class="p-2 border-b border-slate-100 dark:border-slate-800">
+      <input x-ref="search" x-model="query" @input="activeIndex = 0" type="text" placeholder="Поиск…" class="w-full h-9 rounded-md bg-slate-100 dark:bg-slate-800 px-3 text-sm outline-none">
+    </div>
+    {% endif %}
+    <div class="max-h-56 overflow-y-auto p-1">
+      <template x-for="(opt, idx) in filtered" :key="opt.value">
+        <div :data-opt="idx" @mousedown.prevent @click="pick(opt)" @mouseenter="activeIndex = idx"
+             class="px-3 py-2 rounded-md text-sm cursor-pointer" :class="idx === activeIndex && 'bg-accent/10 text-accent'" x-text="opt.label"></div>
+      </template>
+      <div x-show="!filtered.length" class="px-3 py-2 text-sm text-slate-400">Ничего не найдено</div>
+    </div>
+  </div>
+</div>
