@@ -7,77 +7,29 @@
 
 <form method="get" class="max-w-md space-y-6">
 
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Селект (без поиска)</h2>
-    {{ form.subject_plain }}
+  <section class="space-y-4">
+    <h2 class="text-xs uppercase tracking-wider text-slate-400">Селекты</h2>
+    {% include "core/inputs.html" with field=form.subject_plain %}
+    {% include "core/inputs.html" with field=form.subject_search %}
+    {% include "core/inputs.html" with field=form.teachers_plain %}
+    {% include "core/inputs.html" with field=form.teachers_search %}
   </section>
 
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Селект с поиском</h2>
-    {{ form.subject_search }}
+  <section class="space-y-4">
+    <h2 class="text-xs uppercase tracking-wider text-slate-400">Текст / email / число / дата</h2>
+    {% include "core/inputs.html" with field=form.title %}
+    {% include "core/inputs.html" with field=form.email %}
+    {% include "core/inputs.html" with field=form.count %}
+    {% include "core/inputs.html" with field=form.event_date %}
+    {% include "core/inputs.html" with field=form.bio %}
   </section>
 
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Мультиселект (без поиска)</h2>
-    {{ form.teachers_plain }}
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Мультиселект с поиском</h2>
-    {{ form.teachers_search }}
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Текст / email / число</h2>
-    <div class="space-y-4">
-      <div class="relative">
-        {{ form.title }}
-        <label for="{{ form.title.id_for_label }}" class="field-label">Заголовок</label>
-      </div>
-      <div class="relative">
-        {{ form.email }}
-        <label for="{{ form.email.id_for_label }}" class="field-label">Email</label>
-      </div>
-      <div class="relative">
-        {{ form.count }}
-        <label for="{{ form.count.id_for_label }}" class="field-label">Количество</label>
-      </div>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Дата</h2>
-    {# date не имеет placeholder-shown → лейбл всегда поднят (.field-label-up) #}
-    <div class="relative">
-      {{ form.event_date }}
-      <label for="{{ form.event_date.id_for_label }}" class="field-label-up">Дата события</label>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Многострочное поле</h2>
-    <div class="relative">
-      {{ form.bio }}
-      <label for="{{ form.bio.id_for_label }}" class="field-label">О себе</label>
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Радио-группа</h2>
-    <div class="flex flex-wrap gap-6">
-      {% for radio in form.plan %}
-        <label class="flex items-center gap-2 cursor-pointer text-sm select-none">
-          {{ radio.tag }} {{ radio.choice_label }}
-        </label>
-      {% endfor %}
-    </div>
-  </section>
-
-  <section>
-    <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Чекбокс и тумблер</h2>
+  <section class="space-y-3">
+    <h2 class="text-xs uppercase tracking-wider text-slate-400">Радио / чекбокс / тумблер</h2>
+    {% include "core/inputs.html" with field=form.plan %}
     <div class="flex flex-wrap items-center gap-6">
-      <label class="flex items-center gap-2 cursor-pointer select-none text-sm">{{ form.anon }} Анонимно</label>
-      <label class="flex items-center gap-3 cursor-pointer select-none text-sm">{{ form.notify }}<span class="switch"></span> Уведомления</label>
+      {% include "core/inputs.html" with field=form.anon %}
+      {% include "core/inputs.html" with field=form.notify variant="switch" %}
     </div>
   </section>
 

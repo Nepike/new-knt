@@ -1,4 +1,17 @@
 document.addEventListener("alpine:init", () => {
+  // Обёртка текстового поля: плавающий лейбл по состоянию (как active у селектов).
+  // Типы вроде date всегда держат лейбл поднятым — определяем по el.type при init.
+  const INTRINSIC = ["date", "time", "month", "week", "datetime-local", "color"];
+  Alpine.data("field", () => ({
+    focused: false, filled: false, alwaysUp: false,
+    init() {
+      const el = this.$el.querySelector("input, textarea");
+      this.filled = !!(el && el.value);
+      this.alwaysUp = !!el && INTRINSIC.includes(el.type);
+    },
+    get up() { return this.focused || this.filled || this.alwaysUp; },
+  }));
+
   // Общее для select и multiSelect: открытие/закрытие, фокус, клавиатура.
   // Только методы и данные — геттеры (active/filtered/...) живут в компонентах,
   // т.к. spread ...base() превратил бы геттер в статичное значение.

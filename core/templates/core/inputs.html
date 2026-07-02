@@ -1,0 +1,86 @@
+{% load form_extras %}
+{% with wt=field|widget_type %}
+
+{% if wt == "AccentSelect" or wt == "AccentSelectMultiple" %}
+  {% with mult=field.field.widget.allow_multiple_selected search=field.field.widget.search d=field|select_json %}
+  <div class="relative"
+       @keydown.escape="close()" @click.outside="close()" @focusin="focused = true" @focusout="onFocusOut($event)"
+       @keydown.arrow-down.prevent="onArrow(1)" @keydown.arrow-up.prevent="onArrow(-1)" @keydown.enter.prevent="onEnter()"
+       x-data="{% if mult %}multiSelect{% else %}select{% endif %}({ name: '{{ field.html_name }}', search: {{ search|yesno:'true,false' }}, options: {{ d.options }}, {% if mult %}values: {{ d.selected }}{% else %}value: ({{ d.selected }}[0] ?? null){% endif %} })">
+
+    {% if mult %}
+      <template x-for="v in selected" :key="v"><input type="hidden" name="{{ field.html_name }}" :value="v"></template>
+    {% else %}
+      <input type="hidden" name="{{ field.html_name }}" :value="selectedValue ?? ''">
+    {% endif %}
+
+    <div tabindex="0" @click="toggle()" @keydown.space.prevent="toggle()"
+         class="min-h-12 w-full flex flex-wrap items-center gap-1.5 rounded-btn bg-white dark:bg-slate-900 px-2 {% if mult %}pt-3.5 pb-1.5{% else %}py-1.5{% endif %} cursor-pointer outline-none"
+         :class="active ? 'border-2 border-accent' : 'border border-slate-300 dark:border-slate-700'">
+      {% if mult %}
+        <template x-for="opt in selectedOptions" :key="opt.value">
+          <span class="inline-flex items-center gap-1 rounded-full bg-accent/10 text-accent text-xs pl-2.5 pr-1.5 py-1">
+            <span x-text="opt.label"></span>
+            <button type="button" @click.stop="remove(opt.value)" class="hover:text-accent/70" aria-label="Убрать"><i class="fa-solid fa-xmark"></i></button>
+          </span>
+        </template>
+        <i class="fa-solid fa-chevron-down text-slate-400 text-sm ml-auto self-center transition" :class="open && 'rotate-180'"></i>
+      {% else %}
+        <span class="flex-1 truncate text-sm px-1" x-text="selectedLabel"></span>
+        <button type="button" x-show="selectedValue" x-cloak @click.stop="clear()" class="text-slate-400 hover:text-slate-600" aria-label="Очистить"><i class="fa-solid fa-xmark"></i></button>
+        <i class="fa-solid fa-chevron-down text-slate-400 text-sm transition" :class="open && 'rotate-180'"></i>
+      {% endif %}
+    </div>
+
+    {% if field.label %}
+    <span class="field-label" :class="active ? 'fl-accent' : ({% if mult %}selected.length{% else %}selectedValue{% endif %} ? 'fl-up' : 'fl-down')">{{ field.label }}</span>
+    {% endif %}
+
+    <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
+      {% if search %}
+      <div class="p-2 border-b border-slate-100 dark:border-slate-800">
+        <input x-ref="search" x-model="query" @input="activeIndex = 0" type="text" placeholder="Поиск…" class="w-full h-9 rounded-md bg-slate-100 dark:bg-slate-800 px-3 text-sm outline-none">
+      </div>
+      {% endif %}
+      <div class="max-h-56 overflow-y-auto p-1">
+        <template x-for="(opt, idx) in filtered" :key="opt.value">
+          <div :data-opt="idx" @mousedown.prevent @click="pick(opt)" @mouseenter="activeIndex = idx"
+               class="px-3 py-2 rounded-md text-sm cursor-pointer" :class="idx === activeIndex && 'bg-accent/10 text-accent'" x-text="opt.label"></div>
+        </template>
+        <div x-show="!filtered.length" class="px-3 py-2 text-sm text-slate-400">Ничего не найдено</div>
+      </div>
+    </div>
+  </div>
+  {% endwith %}
+
+{% elif wt == "CheckboxInput" and variant == "switch" %}
+  <label class="switch-field">{{ field }}<span class="switch"></span> {{ field.label }}</label>
+
+{% elif wt == "CheckboxInput" %}
+  <label class="checkbox">{{ field }} {{ field.label }}</label>
+
+{% elif wt == "RadioSelect" %}
+  {% if field.label %}<p class="text-sm text-slate-500 mb-2">{{ field.label }}</p>{% endif %}
+  <div class="flex flex-wrap gap-6">
+    {% for radio in field %}
+      <label class="radio">{{ radio.tag }} {{ radio.choice_label }}</label>
+    {% endfor %}
+  </div>
+
+{% else %}
+  {# Текст / email / number / date / textarea — плавающий лейбл. #}
+  <div class="field relative{% if field.errors %} field-error{% endif %}" x-data="field()"
+       @focusin="focused = true" @focusout="focused = false" @input="filled = $event.target.value !== ''">
+    {{ field }}
+    {% if field.label %}
+      <label for="{{ field.id_for_label }}" class="field-label"
+             :class="focused ? 'fl-accent' : (up ? 'fl-up' : 'fl-down')">{{ field.label }}</label>
+    {% endif %}
+  </div>
+{% endif %}
+
+{% if field.errors %}<p class="mt-1 text-xs text-rose-500">{{ field.errors.0 }}</p>{% endif %}
+
+{% endwith %}
+
+
