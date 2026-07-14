@@ -1,4 +1,25 @@
 document.addEventListener("alpine:init", () => {
+  // Тосты. Источники: Django messages (initial при рендере) и событие window
+  // $dispatch('toast', { type, text }) — для действий без перезагрузки (HTMX и т.п.).
+  Alpine.data("toasts", (initial = []) => ({
+    items: [],
+    icons: {
+      success: "fa-circle-check text-emerald-500",
+      error: "fa-circle-xmark text-rose-500",
+      warning: "fa-triangle-exclamation text-amber-500",
+      info: "fa-circle-info text-accent",
+    },
+    init() { initial.forEach((t) => this.add(t)); },
+    add({ type, text }) {
+      if (!this.icons[type]) type = "info";
+      const id = ++this._id;
+      this.items.push({ id, type, text });
+      setTimeout(() => this.remove(id), 5000);
+    },
+    remove(id) { this.items = this.items.filter((t) => t.id !== id); },
+    _id: 0,
+  }));
+
   // Обёртка текстового поля: плавающий лейбл по состоянию (как active у селектов).
   // Типы вроде date всегда держат лейбл поднятым — определяем по el.type при init.
   const INTRINSIC = ["date", "time", "month", "week", "datetime-local", "color"];
@@ -15,8 +36,8 @@ document.addEventListener("alpine:init", () => {
   // Общее для select и multiSelect: открытие/закрытие, фокус, клавиатура.
   // Только методы и данные — геттеры (active/filtered/...) живут в компонентах,
   // т.к. spread ...base() превратил бы геттер в статичное значение.
-  const base = ({ name, options, search = false }) => ({
-    open: false, focused: false, query: "", activeIndex: 0, name, options, search,
+  const base = ({ options, search = false }) => ({
+    open: false, focused: false, query: "", activeIndex: 0, options, search,
     toggle() { this.open ? this.close() : this.openMenu(); },
     openMenu() { this.open = true; this.activeIndex = 0; if (this.search) this.$nextTick(() => this.$refs.search.focus()); },
     close() { this.open = false; this.query = ""; },

@@ -3,9 +3,10 @@
 {% block title %}Демо-компоненты{% endblock %}
 
 {% block content %}
+<div class="max-w-md mx-auto">
 <h1 class="text-2xl font-bold mb-8">Демо-компоненты</h1>
 
-<form method="get" class="max-w-md space-y-6">
+<form method="get" class="space-y-6">
 
   <section class="space-y-4">
     <h2 class="text-xs uppercase tracking-wider text-slate-400">Селекты</h2>
@@ -33,12 +34,37 @@
     </div>
   </section>
 
-  {# TODO: кнопки ещё переделываем — временный стиль #}
   <button type="submit" class="btn btn-primary">Применить</button>
 </form>
 
+<section class="mt-8">
+  <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Кнопки</h2>
+  <div class="flex flex-wrap items-center gap-2">
+    <button type="button" class="btn btn-primary">Сохранить</button>
+    <button type="button" class="btn btn-secondary">Отмена</button>
+    <button type="button" class="btn btn-ghost">Подробнее</button>
+    <button type="button" class="btn btn-danger"><i class="fa-solid fa-trash"></i>Удалить</button>
+    <button type="button" class="btn btn-brand">Войти</button>
+  </div>
+  <div class="flex flex-wrap items-center gap-2 mt-2">
+    <button type="button" class="btn btn-primary" disabled>Сохранить</button>
+    <button type="button" class="btn btn-secondary" disabled>Отмена</button>
+    <button type="button" class="btn btn-secondary"><i class="fa-solid fa-plus"></i>С иконкой</button>
+  </div>
+</section>
+
+<section class="mt-8">
+  <h2 class="text-xs uppercase tracking-wider text-slate-400 mb-3">Тосты (клиентские)</h2>
+  <div class="flex flex-wrap gap-2">
+    <button type="button" class="btn btn-secondary" @click="$dispatch('toast', { type: 'success', text: 'Материал загружен' })">success</button>
+    <button type="button" class="btn btn-secondary" @click="$dispatch('toast', { type: 'error', text: 'Не удалось сохранить' })">error</button>
+    <button type="button" class="btn btn-secondary" @click="$dispatch('toast', { type: 'warning', text: 'Файл больше 100 МБ' })">warning</button>
+    <button type="button" class="btn btn-secondary" @click="$dispatch('toast', { type: 'info', text: 'Появился новый раздел' })">info</button>
+  </div>
+</section>
+
 {% if submitted %}
-<div class="mt-6 max-w-md rounded-btn border border-slate-200 dark:border-slate-800 p-4 text-sm">
+<div class="mt-6 rounded-btn border border-slate-200 dark:border-slate-800 p-4 text-sm">
   <p class="font-medium mb-2">Форма отправлена, <code>cleaned_data</code>:</p>
   <ul class="space-y-1 text-slate-600 dark:text-slate-300">
     {% for k, v in submitted.items %}<li><span class="text-slate-400">{{ k }}:</span> {{ v }}</li>{% endfor %}
@@ -46,5 +72,6 @@
 </div>
 {% endif %}
 
-<p class="mt-4 text-xs text-slate-400 max-w-md">Выбери что-нибудь и нажми «Применить» — значения пройдут через Django-форму (валидация + <code>cleaned_data</code>).</p>
+<p class="mt-4 text-xs text-slate-400">Выбери что-нибудь и нажми «Применить» — значения пройдут через Django-форму (валидация + <code>cleaned_data</code>).</p>
+</div>
 {% endblock %}

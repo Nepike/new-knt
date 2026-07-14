@@ -6,7 +6,7 @@
   <div class="relative"
        @keydown.escape="close()" @click.outside="close()" @focusin="focused = true" @focusout="onFocusOut($event)"
        @keydown.arrow-down.prevent="onArrow(1)" @keydown.arrow-up.prevent="onArrow(-1)" @keydown.enter.prevent="onEnter()"
-       x-data="{% if mult %}multiSelect{% else %}select{% endif %}({ name: '{{ field.html_name }}', search: {{ search|yesno:'true,false' }}, options: {{ d.options }}, {% if mult %}values: {{ d.selected }}{% else %}value: ({{ d.selected }}[0] ?? null){% endif %} })">
+       x-data="{% if mult %}multiSelect{% else %}select{% endif %}({ search: {{ search|yesno:'true,false' }}, options: {{ d.options }}, {% if mult %}values: {{ d.selected }}{% else %}value: ({{ d.selected }}[0] ?? null){% endif %} })">
 
     {% if mult %}
       <template x-for="v in selected" :key="v"><input type="hidden" name="{{ field.html_name }}" :value="v"></template>
@@ -33,7 +33,7 @@
     </div>
 
     {% if field.label %}
-    <span class="field-label" :class="active ? 'fl-accent' : ({% if mult %}selected.length{% else %}selectedValue{% endif %} ? 'fl-up' : 'fl-down')">{{ field.label }}</span>
+    <span class="field-label" :class="active ? 'fl-accent' : ({% if mult %}selected.length{% else %}selectedValue{% endif %} ? 'fl-up' : 'fl-down')">{{ field.label }}{% if not field.field.required %}<span class="opt"> · необязательно</span>{% endif %}</span>
     {% endif %}
 
     <div x-show="open" x-cloak x-transition.origin.top class="absolute z-30 mt-1 w-full rounded-btn border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-lg overflow-hidden">
@@ -54,13 +54,13 @@
   {% endwith %}
 
 {% elif wt == "CheckboxInput" and variant == "switch" %}
-  <label class="switch-field">{{ field }}<span class="switch"></span> {{ field.label }}</label>
+  <label class="switch-field">{{ field }}<span class="switch"></span> {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}</label>
 
 {% elif wt == "CheckboxInput" %}
-  <label class="checkbox">{{ field }} {{ field.label }}</label>
+  <label class="checkbox">{{ field }} {{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}</label>
 
 {% elif wt == "RadioSelect" %}
-  {% if field.label %}<p class="text-sm text-slate-500 mb-2">{{ field.label }}</p>{% endif %}
+  {% if field.label %}<p class="text-sm text-slate-500 mb-2">{{ field.label }}{% if field.field.required %}<span class="req">*</span>{% endif %}</p>{% endif %}
   <div class="flex flex-wrap gap-6">
     {% for radio in field %}
       <label class="radio">{{ radio.tag }} {{ radio.choice_label }}</label>
@@ -74,12 +74,13 @@
     {{ field }}
     {% if field.label %}
       <label for="{{ field.id_for_label }}" class="field-label"
-             :class="focused ? 'fl-accent' : (up ? 'fl-up' : 'fl-down')">{{ field.label }}</label>
+             :class="focused ? 'fl-accent' : (up ? 'fl-up' : 'fl-down')">{{ field.label }}{% if not field.field.required %}<span class="opt"> · необязательно</span>{% endif %}</label>
     {% endif %}
   </div>
 {% endif %}
 
-{% if field.errors %}<p class="mt-1 text-xs text-rose-500">{{ field.errors.0 }}</p>{% endif %}
+{% if field.errors %}<p class="mt-1 text-xs text-rose-500">{{ field.errors.0 }}</p>
+{% elif field.help_text %}<div class="mt-1 text-xs text-slate-400">{{ field.help_text }}</div>{% endif %}
 
 {% endwith %}
 
