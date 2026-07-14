@@ -8,6 +8,12 @@ CSRF_TRUSTED_ORIGINS = ["https://knt-mipt.ru", "https://inbicst.ru", "https://fn
 
 DATABASES = {"default": env.db("DATABASE_URL")}
 
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = "info@knt-mipt.ru"
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD")
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True

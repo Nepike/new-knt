@@ -15,7 +15,6 @@ DJANGO_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "django.forms",
 ]
 THIRD_PARTY_APPS = []
 LOCAL_APPS = [
@@ -34,6 +33,9 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    # Сайт закрытый: всё требует логина, кроме auth-страниц и явных @login_not_required.
+    "django.contrib.auth.middleware.LoginRequiredMiddleware",
+    "users.middleware.MustChangePasswordMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
@@ -41,9 +43,6 @@ MIDDLEWARE = [
 ROOT_URLCONF = "knt.urls"
 WSGI_APPLICATION = "knt.wsgi.application"
 ASGI_APPLICATION = "knt.asgi.application"
-
-# Рендерить шаблоны виджетов форм через наши TEMPLATES (чтобы работал core/widgets/select.html).
-FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 TEMPLATES = [
     {
@@ -81,3 +80,9 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.User"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "/demo/"  # TODO: сменить на главную, когда появится
+LOGOUT_REDIRECT_URL = "login"
+
+DEFAULT_FROM_EMAIL = "КНТ МФТИ <info@knt-mipt.ru>"

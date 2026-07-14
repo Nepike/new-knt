@@ -1,0 +1,23 @@
+{% extends "core/base.html" %}
+
+{% block title %}Регистрация студента{% endblock %}
+
+{% block content %}
+<div class="w-full max-w-md m-auto">
+  <h1 class="text-2xl font-bold mb-3 text-center">Регистрация студента</h1>
+  <p class="text-sm text-slate-500 dark:text-slate-400 text-center mb-8">Студенту придёт письмо со ссылкой для установки пароля.</p>
+
+  <form method="post" class="space-y-6">
+    {% csrf_token %}
+
+    {% include "core/inputs.html" with field=form.surname %}
+    {% include "core/inputs.html" with field=form.name %}
+    {% include "core/inputs.html" with field=form.patronymic %}
+    {% include "core/inputs.html" with field=form.email %}
+    {% include "core/inputs.html" with field=form.team %}
+    {% include "core/inputs.html" with field=form.groups %}
+
+    <button type="submit" class="btn btn-primary w-full">Создать аккаунт</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,14 @@
+<div id="review-{{ r.pk }}" class="rounded-btn border-2 border-accent/60 bg-white dark:bg-slate-900 p-4">
+  <form hx-post="{% url 'review_edit' r.pk %}" hx-target="#review-{{ r.pk }}" hx-swap="outerHTML" class="space-y-4">
+    {% csrf_token %}
+    <p class="font-semibold">Редактирование отзыва</p>
+    {% include "teachers/_review_fields.html" %}
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      {% include "core/inputs.html" with field=form.hide_author variant="switch" %}
+      <div class="flex gap-2">
+        <button type="button" class="btn btn-ghost" hx-get="{% url 'review_card' r.pk %}" hx-target="#review-{{ r.pk }}" hx-swap="outerHTML">Отмена</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+      </div>
+    </div>
+  </form>
+</div>

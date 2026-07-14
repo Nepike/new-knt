@@ -1,0 +1,19 @@
+{% if form.non_field_errors %}<p class="text-xs text-rose-500">{{ form.non_field_errors.0 }}</p>{% endif %}
+
+<div class="space-y-2.5 max-w-xs">
+  {% for f in form.score_fields %}
+  <div class="flex items-center justify-between gap-4" x-data="stars({ value: {{ f.value|default:'null' }} })" @mouseleave="hover = null">
+    <span class="text-sm">{{ f.label }}</span>
+    <input type="hidden" name="{{ f.html_name }}" :value="value ?? ''">
+    <div class="flex gap-0.5 text-lg leading-none">
+      <template x-for="n in 5" :key="n">
+        <button type="button" @click="set(n)" @mouseenter="hover = n" class="transition-colors"
+                :class="filled(n) ? 'text-amber-400' : 'text-slate-300 dark:text-slate-600'"><i class="fa-solid fa-star"></i></button>
+      </template>
+    </div>
+  </div>
+  {% if f.errors %}<p class="text-xs text-rose-500">{{ f.errors.0 }}</p>{% endif %}
+  {% endfor %}
+</div>
+
+{% include "core/inputs.html" with field=form.text %}

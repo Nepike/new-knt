@@ -62,6 +62,14 @@ document.addEventListener("alpine:init", () => {
     clear() { this.selectedValue = null; },
   }));
 
+  // Звёзды 1–5 для формы отзыва. Повторный клик по той же звезде снимает оценку.
+  Alpine.data("stars", ({ value = null } = {}) => ({
+    value,
+    hover: null,
+    set(n) { this.value = this.value === n ? null : n; },
+    filled(n) { return n <= (this.hover ?? this.value ?? 0); },
+  }));
+
   Alpine.data("multiSelect", (cfg) => ({
     ...base(cfg),
     selected: [...(cfg.values ?? [])],

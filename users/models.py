@@ -49,15 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     mailing_allowed = models.BooleanField("согласие на рассылку", default=True)
     note = models.TextField("заметка", blank=True, default="")
 
-    team = models.ForeignKey(
-        "core.Team",
-        verbose_name="группа",
-        on_delete=models.PROTECT,
-        null=True,
-        blank=True,
-        related_name="members",
-    )
-
+    team = models.ForeignKey("core.Team", verbose_name="группа", on_delete=models.PROTECT, null=True, blank=True, related_name="members",)
     date_joined = models.DateTimeField("дата регистрации", default=timezone.now)
 
     # TODO (M5): баланс/валюта -> приложение economy (источник истины — BalanceLog)

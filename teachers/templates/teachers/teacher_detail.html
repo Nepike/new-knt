@@ -1,0 +1,121 @@
+{% extends "core/base.html" %}
+{% load text_extras %}
+
+{% block title %}{{ teacher.surname }} {{ teacher.name }} {{ teacher.patronymic }}{% endblock %}
+
+{% block content %}
+<div class="w-full grid lg:grid-cols-[280px_1fr] gap-6 lg:gap-y-0 items-start">
+
+  <div class="min-w-0 lg:col-start-2 flex flex-wrap items-start justify-between gap-3">
+    <div class="min-w-0">
+      <h1 class="text-2xl font-bold leading-tight">{{ teacher.surname }} {{ teacher.name }} {{ teacher.patronymic }}</h1>
+      {% if teacher.subjects.all %}
+      <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+        <span class="font-medium text-slate-600 dark:text-slate-300">Преподаёт:</span>
+        {% for s in teacher.subjects.all %}{{ s.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+      </p>
+      {% endif %}
+    </div>
+    {% if perms.teachers.change_teacher %}
+    <a href="{% url 'admin:teachers_teacher_change' teacher.pk %}" class="btn btn-secondary"><i class="fa-solid fa-pen-to-square"></i>Редактировать</a>
+    {% endif %}
+  </div>
+
+  <aside class="w-full max-w-sm mx-auto lg:max-w-none lg:col-start-1 lg:row-start-1 lg:row-span-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 text-center">
+    <span class="w-36 h-36 rounded-full overflow-hidden inline-flex ring-4 ring-slate-200 dark:ring-slate-700">
+      {% if teacher.photo %}
+        <img src="{{ teacher.photo.url }}" alt="" class="w-full h-full object-cover">
+      {% else %}
+        <span class="flex-1 bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-3xl font-medium">{{ teacher.surname|slice:":1" }}{{ teacher.name|slice:":1" }}</span>
+      {% endif %}
+    </span>
+
+    {% if teacher.overall_rating %}
+    <div class="mt-4">
+      <div class="flex items-center justify-center gap-2">
+        <span class="text-4xl font-black leading-none">{{ teacher.overall_rating|floatformat:1 }}</span>
+        <span class="relative inline-block leading-none whitespace-nowrap text-slate-300 dark:text-slate-600">
+          <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          <span class="absolute inset-y-0 left-0 overflow-hidden whitespace-nowrap text-amber-400" style="width: {% widthratio teacher.overall_rating 5 100 %}%">
+            <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+          </span>
+        </span>
+      </div>
+      <p class="text-xs text-slate-400 mt-1.5">{{ teacher.reviews_count }} {{ teacher.reviews_count|plural:"оценка,оценки,оценок" }}</p>
+    </div>
+
+    <div class="mt-6 space-y-3 text-left">
+      {% for label, avg in scales %}
+      <div>
+        <div class="flex items-baseline justify-between text-sm">
+          <span>{{ label }}</span>
+          <span class="font-bold">{% if avg %}{{ avg|floatformat:1 }}{% else %}—{% endif %}</span>
+        </div>
+        <div class="h-1.5 rounded-full bg-slate-200 dark:bg-slate-700 mt-1.5">
+          {% if avg %}<div class="h-full rounded-full bg-accent" style="width: {% widthratio avg 5 100 %}%"></div>{% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="mt-4 text-sm text-slate-400">Оценок пока нет</p>
+    {% endif %}
+  </aside>
+
+  <div class="min-w-0 lg:col-start-2 lg:row-start-2">
+    {% if teacher.bio %}
+    <p class="text-sm text-slate-600 dark:text-slate-300 mt-4 whitespace-pre-line">{{ teacher.bio }}</p>
+    {% endif %}
+
+    {% if teacher.birthday %}
+    <p class="text-sm text-slate-500 dark:text-slate-400 mt-4">
+      <i class="fa-solid fa-cake-candles text-slate-400 mr-1.5"></i>{{ teacher.birthday|date:"j E Y" }}{% if teacher.age %} ({{ teacher.age }} {{ teacher.age|plural:"год,года,лет" }}){% endif %}
+    </p>
+    {% endif %}
+
+    {% if teacher.email or teacher.phone or teacher.vk_page or teacher.tg_page %}
+    <div class="flex flex-wrap gap-x-5 gap-y-2 mt-3 text-sm">
+      {% if teacher.email %}<a href="mailto:{{ teacher.email }}" class="hover:text-accent transition-colors"><i class="fa-solid fa-envelope text-slate-400 mr-1.5"></i>{{ teacher.email }}</a>{% endif %}
+      {% if teacher.phone %}<a href="tel:{{ teacher.phone }}" class="hover:text-accent transition-colors"><i class="fa-solid fa-phone text-slate-400 mr-1.5"></i>{{ teacher.phone }}</a>{% endif %}
+      {% if teacher.vk_page %}<a href="https://vk.com/{{ teacher.vk_page }}" target="_blank" class="hover:text-accent transition-colors"><i class="fa-brands fa-vk text-slate-400 mr-1.5"></i>{{ teacher.vk_page }}</a>{% endif %}
+      {% if teacher.tg_page %}<a href="https://t.me/{{ teacher.tg_page }}" target="_blank" class="hover:text-accent transition-colors"><i class="fa-brands fa-telegram text-slate-400 mr-1.5"></i>{{ teacher.tg_page }}</a>{% endif %}
+    </div>
+    {% endif %}
+
+    <div x-data="{ showAll: false }">
+
+    <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 mt-10 mb-4">
+      <h2 class="text-xl font-bold">Отзывы</h2>
+      {% if hidden_count %}
+      <button type="button" class="text-sm text-accent hover:underline" @click="showAll = !showAll"
+              x-text="showAll ? 'Скрыть оценки без текста' : 'Показать оценки без текста ({{ hidden_count }})'">Показать оценки без текста ({{ hidden_count }})</button>
+      {% endif %}
+    </div>
+
+    <div class="flex flex-col gap-3">
+
+      {% if not user_review %}
+      <form method="post" class="rounded-btn border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
+        {% csrf_token %}
+        <p class="font-semibold">Оставить отзыв</p>
+        {% include "teachers/_review_fields.html" %}
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          {% include "core/inputs.html" with field=form.hide_author variant="switch" %}
+          <button type="submit" class="btn btn-primary">Отправить</button>
+        </div>
+      </form>
+      {% endif %}
+
+      {% for r in reviews %}
+      {% include "teachers/_review.html" %}
+      {% empty %}
+      <div class="text-center py-12 text-slate-400">
+        <i class="fa-regular fa-comment-dots text-3xl mb-3"></i>
+        <p>Отзывов пока нет — будь первым!</p>
+      </div>
+      {% endfor %}
+    </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

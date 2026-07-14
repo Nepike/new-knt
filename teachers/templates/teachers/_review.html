@@ -1,0 +1,72 @@
+<div id="review-{{ r.pk }}" {% if not r.text and r.author_id != user.pk %}x-show="showAll" x-cloak {% endif %}class="rounded-btn bg-white dark:bg-slate-900 p-4 {% if r.author_id == user.pk %}border-2 border-accent/60{% else %}border border-slate-200 dark:border-slate-800{% endif %}">
+  <div class="flex items-start gap-3">
+    {% if r.hide_author and r.author_id != user.pk %}
+    <span class="w-10 h-10 rounded-lg shrink-0 bg-slate-200 dark:bg-slate-700 flex items-center justify-center"><i class="fa-solid fa-user-secret text-xl text-slate-500 dark:text-slate-400"></i></span>
+    <div class="min-w-0 flex-1">
+      <p class="font-medium text-sm leading-tight">Аноним</p>
+      <p class="text-xs text-slate-400 mt-0.5">Студент ^&amp;## курса</p>
+    </div>
+    {% else %}
+    {# TODO: ссылка на профиль + косметика профиля (рамка/фон карточки) — модуль профилей (M5) #}
+    <span class="w-10 h-10 rounded-lg overflow-hidden ring-1 ring-slate-200 dark:ring-slate-700 shrink-0 inline-flex">
+      {% if r.author.photo %}
+        <img src="{{ r.author.photo.url }}" alt="" class="w-full h-full object-cover">
+      {% else %}
+        <span class="flex-1 bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-sm font-medium">{{ r.author.surname|slice:":1" }}{{ r.author.name|slice:":1" }}</span>
+      {% endif %}
+    </span>
+    <div class="min-w-0 flex-1">
+      <p class="font-medium text-sm leading-tight">{{ r.author.name }} {{ r.author.surname }}{% if r.author_id == user.pk %} <span class="text-xs font-normal text-accent">— ваш отзыв{% if r.hide_author %} (анонимный){% endif %}</span>{% endif %}</p>
+      {% if r.author.team %}<p class="text-xs text-slate-400 mt-0.5">{{ r.author.team.get_grade_str }}</p>{% endif %}
+    </div>
+    {% endif %}
+    <div class="text-right shrink-0">
+      {% if r.overall %}
+      <span class="inline-flex items-center gap-1 rounded-md bg-amber-400/15 px-2 py-1 text-sm font-bold leading-none text-amber-500 dark:text-amber-400"
+            title="{% for label, v in r.score_items %}{{ label }}: {{ v }}{% if not forloop.last %} · {% endif %}{% endfor %}">
+        <i class="fa-solid fa-star text-xs"></i>{{ r.overall|floatformat:1 }}
+      </span>
+      {% endif %}
+      <span class="block text-xs text-slate-400 {% if r.overall %}mt-1.5{% endif %}">{{ r.created|date:"j E Y" }}</span>
+    </div>
+  </div>
+
+  {% if r.text %}
+  <p class="text-sm mt-3 whitespace-pre-line">{{ r.text }}</p>
+  {% else %}
+  <div class="flex flex-wrap gap-1.5 mt-3">
+    {% for label, v in r.score_items %}
+    <span class="inline-flex items-center gap-1.5 rounded-md bg-slate-100 dark:bg-slate-800 px-2 py-1 text-xs text-slate-500 dark:text-slate-400">
+      {{ label }} <span class="font-bold text-amber-500 dark:text-amber-400"><i class="fa-solid fa-star text-[10px]"></i> {{ v }}</span>
+    </span>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if r.text or r.author_id == user.pk or perms.teachers.change_review or perms.teachers.delete_review %}
+  <div class="flex items-center justify-between gap-4 mt-3">
+    <div class="flex gap-4 text-sm">
+      {% if r.text %}
+      <button type="button" hx-post="{% url 'review_like' r.pk %}" hx-target="#review-{{ r.pk }}" hx-swap="outerHTML"
+              class="transition-colors {% if r.liked_by_me %}text-accent{% else %}text-slate-400 hover:text-accent{% endif %}">
+        <i class="fa-solid fa-thumbs-up mr-1"></i>{{ r.likes }}
+      </button>
+      <button type="button" hx-post="{% url 'review_dislike' r.pk %}" hx-target="#review-{{ r.pk }}" hx-swap="outerHTML"
+              class="transition-colors {% if r.disliked_by_me %}text-rose-500{% else %}text-slate-400 hover:text-rose-500{% endif %}">
+        <i class="fa-solid fa-thumbs-down mr-1"></i>{{ r.dislikes }}
+      </button>
+      {% endif %}
+    </div>
+    <div class="flex gap-3">
+      {% if r.author_id == user.pk or perms.teachers.change_review %}
+      <button type="button" hx-get="{% url 'review_edit' r.pk %}" hx-target="#review-{{ r.pk }}" hx-swap="outerHTML"
+              class="text-xs text-accent hover:underline">Изменить</button>
+      {% endif %}
+      {% if r.author_id == user.pk or perms.teachers.delete_review %}
+      <button type="button" hx-post="{% url 'review_delete' r.pk %}" hx-confirm="Удалить отзыв? Оценки тоже пропадут."
+              class="text-xs text-rose-500 hover:underline">Удалить</button>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>

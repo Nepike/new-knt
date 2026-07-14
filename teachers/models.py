@@ -8,16 +8,24 @@ from django.utils import timezone
 
 from core.models import Subject
 
+SCORE_LABELS = {
+    "score_knowledge": "Знания",
+    "score_skill": "Умение преподавать",
+    "score_communication": "В общении",
+    "score_freeloading": "Халявность",
+}
+
 
 class TeacherQuerySet(models.QuerySet):
     def with_ratings(self):
+        # order_by обязателен: annotate с GROUP BY отбрасывает Meta.ordering
         return self.annotate(
             reviews_count=Count("reviews", distinct=True),
             avg_knowledge=Avg("reviews__score_knowledge"),
             avg_skill=Avg("reviews__score_skill"),
             avg_communication=Avg("reviews__score_communication"),
             avg_freeloading=Avg("reviews__score_freeloading"),
-        )
+        ).order_by("surname", "name")
 
 
 class Teacher(models.Model):
@@ -96,3 +104,10 @@ class Review(models.Model):
 
     def __str__(self):
         return f"{self.author} → {self.teacher}"
+
+    def overall(self):
+        rated = [getattr(self, f) for f in SCORE_LABELS if getattr(self, f) is not None]
+        return round(sum(rated) / len(rated), 2) if rated else None
+
+    def score_items(self):
+        return [(label, getattr(self, f)) for f, label in SCORE_LABELS.items() if getattr(self, f) is not None]
