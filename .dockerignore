@@ -1,0 +1,16 @@
+.git/
+.venv/
+tailwindcss.exe
+media/
+staticfiles/
+__pycache__/
+*.py[cod]
+db.sqlite3
+db.sqlite3-journal
+.env
+.env.*
+.idea/
+.vscode/
+node_modules/
+PLAN.md
+core/static/core/css/base.css

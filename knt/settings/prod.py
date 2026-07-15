@@ -3,10 +3,14 @@ from .base import env
 
 DEBUG = False
 SECRET_KEY = env("SECRET_KEY")
-ALLOWED_HOSTS = ["knt-mipt.ru", "inbicst.ru", "fnbic.ru"]
-CSRF_TRUSTED_ORIGINS = ["https://knt-mipt.ru", "https://inbicst.ru", "https://fnbic.ru"]
+ALLOWED_HOSTS = ["knt-mipt.ru", "inbicst.ru", "fnbic.ru", "test.inbicst.ru"]
+CSRF_TRUSTED_ORIGINS = ["https://knt-mipt.ru", "https://inbicst.ru", "https://fnbic.ru", "https://test.inbicst.ru"]
 
 DATABASES = {"default": env.db("DATABASE_URL")}
+
+# Статику раздаёт сам Django через whitenoise (nginx только проксирует + TLS).
+MIDDLEWARE.insert(1, "whitenoise.middleware.WhiteNoiseMiddleware")  # noqa: F405
+STORAGES["staticfiles"]["BACKEND"] = "whitenoise.storage.CompressedManifestStaticFilesStorage"  # noqa: F405
 
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 465

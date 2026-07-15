@@ -1,0 +1,30 @@
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: knt
+      POSTGRES_USER: knt
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U knt"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    build: .
+    env_file: .env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "127.0.0.1:8001:8000"   # хост-порт 8001 (рядом с основным сайтом), nginx проксирует
+    volumes:
+      - ./media:/app/media       # bind-mount: nginx отдаёт /media с хоста
+    restart: unless-stopped
+
+volumes:
+  pgdata:
